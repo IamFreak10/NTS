@@ -1,27 +1,25 @@
 import http, { IncomingMessage, Server, ServerResponse } from 'http';
 import config from './config';
+import adddRoute, { Route, RouteHandler, routes } from './helpers/routeHander';
+import "./routes"
+
+
 const server: Server = http.createServer(
   (req: IncomingMessage, res: ServerResponse) => {
     console.log('Server Is Running\n');
-    if (req.url == '/' && req.method == 'GET') {
-      res.writeHead(200, { 'content-type': 'application/json' });
+    const methodMap = req.method?.toUpperCase() || '';
+    const path = req.url||'';
+    const handler:RouteHandler | undefined = routes.get(methodMap)?.get(path);
+    if (handler){
+      handler(req,res);
+    }else{
       res.end(
         JSON.stringify({
-          message: 'Hello From Node JS',
-          path: req.url,
+          mesage: 'Error',
         })
       );
     }
-    // health route
-    if (req.url == '/api' && req.method == 'GET') {
-      res.writeHead(200, { 'content-type': 'application/json' });
-      res.end(
-        JSON.stringify({
-          message: 'Health status OK',
-          path: req.url,
-        })
-      );
-    }
+    
 
     if (req.url == '/api/users' && req.method == 'POST') {
       let body = '';
@@ -31,22 +29,22 @@ const server: Server = http.createServer(
       });
 
       req.on('end', () => {
-          try{
-              const parseBody = JSON.parse(body);
-        console.log(parseBody);
-        console.log("Having  Changes...")
-        res.end(
-          JSON.stringify({
-            mesage: 'Processing',
-          })
-        );
-          }catch(error){
-            res.end(
-              JSON.stringify({
-                mesage: 'Error',
-              })
-            );
-          }
+        try {
+          const parseBody = JSON.parse(body);
+          console.log(parseBody);
+          console.log('Having  Changes...');
+          res.end(
+            JSON.stringify({
+              mesage: 'Processing',
+            })
+          );
+        } catch (error) {
+          res.end(
+            JSON.stringify({
+              mesage: 'Error',
+            })
+          );
+        }
       });
     }
   }
