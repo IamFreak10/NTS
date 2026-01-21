@@ -21,32 +21,7 @@ const server: Server = http.createServer(
     }
     
 
-    if (req.url == '/api/users' && req.method == 'POST') {
-      let body = '';
-      // liste for data chunk,
-      req.on('data', (chunk) => {
-        body += chunk.toString();
-      });
-
-      req.on('end', () => {
-        try {
-          const parseBody = JSON.parse(body);
-          console.log(parseBody);
-          console.log('Having  Changes...');
-          res.end(
-            JSON.stringify({
-              mesage: 'Processing',
-            })
-          );
-        } catch (error) {
-          res.end(
-            JSON.stringify({
-              mesage: 'Error',
-            })
-          );
-        }
-      });
-    }
+    
   }
 );
 
